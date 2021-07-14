@@ -10,12 +10,10 @@
 #define LOG_DURATION_STREAM(x, output_stream) LogDuration UNIQUE_VAR_NAME_PROFILE(x, output_stream)
 
 class LogDuration {
-public:
+   public:
     using Clock = std::chrono::steady_clock;
 
-    LogDuration(const std::string& id, std::ostream& output = std::cerr)
-        : id_(id), output_(output) {
-    }
+    LogDuration(const std::string& id, std::ostream& output = std::cerr) : id_(id), output_(output) {}
 
     ~LogDuration() {
         using namespace std::chrono;
@@ -26,7 +24,7 @@ public:
         output_ << id_ << ": "s << duration_cast<milliseconds>(dur).count() << " ms"s << std::endl;
     }
 
-private:
+   private:
     const std::string id_;
     const Clock::time_point start_time_ = Clock::now();
     std::ostream& output_;

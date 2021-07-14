@@ -1,19 +1,19 @@
-#include <string>
-#include <iostream>
-
 #include "document.h"
+
+#include <iostream>
+#include <string>
 
 using namespace std::literals;
 
 Document::Document() : id(0), relevance(0), rating(0) {}
 
-Document::Document(int id, double relevance, int rating): id(id), relevance(relevance), rating(rating) {}
+Document::Document(int id, double relevance, int rating) : id(id), relevance(relevance), rating(rating) {}
 
 void PrintDocument(const Document& document) {
     std::cout << "{ "s
-    << "document_id = "s << document.id << ", "s
-    << "relevance = "s << document.relevance << ", "s
-    << "rating = "s << document.rating << " }"s;
+              << "document_id = "s << document.id << ", "s
+              << "relevance = "s << document.relevance << ", "s
+              << "rating = "s << document.rating << " }"s;
 }
 
 std::ostream& operator<<(std::ostream& output, const Document& document) {
@@ -36,6 +36,6 @@ std::ostream& operator<<(std::ostream& out, const DocumentStatus status) {
             out << "kRemoved"s;
             break;
     }
-    
+
     return out;
 }

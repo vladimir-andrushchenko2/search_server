@@ -8,4 +8,4 @@ std::string ReadLine();
 
 int ReadLineWithNumber();
 
-} // namespace read_input
+}  // namespace read_input

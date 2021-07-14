@@ -17,4 +17,4 @@ int ReadLineWithNumber() {
     return result;
 }
 
-} // namespace read_input
+}  // namespace read_input

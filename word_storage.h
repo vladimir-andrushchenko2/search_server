@@ -9,7 +9,7 @@
 namespace search_server_storage_container {
 
 class WordStorage {
-public:
+   public:
     void Insert(std::string word) {
         if (string_views_.count(word) == 0) {
             data_.push_back(std::move(word));
@@ -24,17 +24,13 @@ public:
         }
     }
 
-    std::set<std::string_view>::const_iterator Find(std::string_view word) {
-        return string_views_.find(word);
-    }
+    std::set<std::string_view>::const_iterator Find(std::string_view word) { return string_views_.find(word); }
 
-    auto end() {
-        return string_views_.end();
-    }
+    auto end() { return string_views_.end(); }
 
-private:
+   private:
     std::set<std::string_view> string_views_;
     std::list<std::string> data_;
 };
 
-}
+}  // namespace search_server_storage_container

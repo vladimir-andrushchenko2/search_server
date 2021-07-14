@@ -1,9 +1,9 @@
 #pragma once
 
-#include <vector>
-#include <mutex>
-#include <execution>
 #include <algorithm>
+#include <execution>
+#include <mutex>
+#include <vector>
 
 namespace parallel_copy {
 
@@ -12,21 +12,18 @@ std::vector<typename Container::value_type> CopyIfUnordered(const Container& con
     std::vector<typename Container::value_type> result;
     result.reserve(container.size());
     std::mutex result_mutex;
-    std::for_each(
-        std::execution::par,
-        container.begin(), container.end(),
-        [predicate, &result_mutex, &result](const auto& value) {
-            if (predicate(value)) {
-                typename Container::value_type* destination;
-                {
-                    std::lock_guard guard(result_mutex);
-                    destination = &result.emplace_back();
-                }
-                *destination = value;
-            }
-        }
-    );
+    std::for_each(std::execution::par, container.begin(), container.end(),
+                  [predicate, &result_mutex, &result](const auto& value) {
+                      if (predicate(value)) {
+                          typename Container::value_type* destination;
+                          {
+                              std::lock_guard guard(result_mutex);
+                              destination = &result.emplace_back();
+                          }
+                          *destination = value;
+                      }
+                  });
     return result;
 }
 
-}
+}  // namespace parallel_copy
