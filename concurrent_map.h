@@ -34,7 +34,7 @@ class ConcurrentMap {
         std::map<K, V> result;
         for (auto &map : all_maps) {
             for (const auto &[key, value] : map.bucket_map_) {
-                result[key] = operator[](key).ref_to_value;
+                result.insert({key, operator[](key).ref_to_value});
             }
         }
         return result;
