@@ -13,10 +13,17 @@
 #include <vector>
 
 #include "concurrent_map.h"
-#include "copy_if_unordered.h"
+// #include "copy_if_unordered.h"
 #include "document.h"
 #include "string_processing.h"
 #include "word_storage.h"
+
+namespace parallel_copy {
+
+template <typename Container, typename Predicate>
+std::vector<typename Container::value_type> CopyIfUnordered(const Container& container, Predicate predicate);
+
+}  // namespace parallel_copy
 
 using namespace std::literals;
 
@@ -380,3 +387,26 @@ void MatchDocuments(const SearchServer& search_server, const std::string_view qu
 SearchServer CreateSearchServer(const std::string_view stop_words);
 
 }  // namespace search_server_helpers
+
+namespace parallel_copy {
+
+template <typename Container, typename Predicate>
+std::vector<typename Container::value_type> CopyIfUnordered(const Container& container, Predicate predicate) {
+    std::vector<typename Container::value_type> result;
+    result.reserve(container.size());
+    std::mutex result_mutex;
+    std::for_each(std::execution::par, container.begin(), container.end(),
+                  [predicate, &result_mutex, &result](const auto& value) {
+                      if (predicate(value)) {
+                          typename Container::value_type* destination;
+                          {
+                              std::lock_guard guard(result_mutex);
+                              destination = &result.emplace_back();
+                          }
+                          *destination = value;
+                      }
+                  });
+    return result;
+}
+
+}  // namespace parallel_copy
