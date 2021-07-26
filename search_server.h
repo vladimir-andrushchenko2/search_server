@@ -179,21 +179,12 @@ std::tuple<std::vector<std::string_view>, DocumentStatus> SearchServer::MatchDoc
                                                                                       int document_id) const {
     const Query query = ParseQuery(policy, raw_query);
 
-    std::vector<std::string_view> matched_words;
-    for (const std::string_view word : query.plus_words) {
-        if (word_to_document_id_to_term_frequency_.count(word) == 0) {
-            continue;
-        }
-
-        if (word_to_document_id_to_term_frequency_.at(word).count(document_id)) {
-            matched_words.push_back(word);
-        }
-    }
-
     const auto word_checker = [this, document_id](std::string_view word) {
         const auto it = word_to_document_id_to_term_frequency_.find(word);
         return it != word_to_document_id_to_term_frequency_.end() && it->second.count(document_id);
     };
+
+    std::vector<std::string_view> matched_words = parallel_copy::CopyIfUnordered(query.plus_words, word_checker);
 
     bool is_minus_word_in_document = std::any_of(std::execution::par, query.minus_words.begin(), query.minus_words.end(), word_checker);
 
