@@ -329,8 +329,8 @@ std::vector<Document> SearchServer::FindTopDocuments(Execution policy, const std
 
 template <typename Execution>
 std::vector<Document> SearchServer::FindAllDocuments(Execution policy, const Query& query) const {
-    static constexpr int kNumberOfThreads = 4;
-    ConcurrentMap<int, double> document_id_to_relevance_concurrent(kNumberOfThreads);
+    static constexpr int kNumberOfBuckets = 50;
+    ConcurrentMap<int, double> document_id_to_relevance_concurrent(kNumberOfBuckets);
 
     std::for_each(std::execution::par, query.plus_words.begin(), query.plus_words.end(), [&](std::string_view word) {
         if (word_to_document_id_to_term_frequency_.count(word) == 0) {
