@@ -345,17 +345,17 @@ std::vector<Document> SearchServer::FindAllDocuments(Execution policy, const Que
         }
     });
 
-    std::map<int, double> document_id_to_relevance = document_id_to_relevance_concurrent.BuildOrdinaryMap();
-
-    for (const std::string_view word : query.minus_words) {
+    std::for_each(std::execution::par, query.minus_words.begin(), query.minus_words.end(), [&](std::string_view word){
         if (word_to_document_id_to_term_frequency_.count(word) == 0) {
-            continue;
+            return;
         }
 
         for (const auto& [document_id, _] : word_to_document_id_to_term_frequency_.at(word)) {
-            document_id_to_relevance.erase(document_id);
+            document_id_to_relevance_concurrent.Erase(document_id);
         }
-    }
+    });
+
+    std::map<int, double> document_id_to_relevance = document_id_to_relevance_concurrent.BuildOrdinaryMap();
 
     std::vector<Document> matched_documents;
     for (const auto& [document_id, relevance] : document_id_to_relevance) {

@@ -30,6 +30,13 @@ class ConcurrentMap {
         return Access{std::lock_guard(curr_map.bucket_mutex_), curr_map.bucket_map_[key]};
     }
 
+    void Erase(const K &key) {
+        size_t map_key = key % kBucketCount;
+        auto &curr_map = all_maps[map_key];
+        std::lock_guard(curr_map.bucket_mutex_);
+        curr_map.bucket_map_.erase(key);
+    }
+
     std::map<K, V> BuildOrdinaryMap() {
         std::map<K, V> result;
         for (auto &map : all_maps) {
