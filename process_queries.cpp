@@ -17,9 +17,7 @@ std::vector<Document> ProcessQueriesJoined(const SearchServer& search_server, co
     const auto documents = ProcessQueries(search_server, queries);
 
     const auto func = [](std::vector<Document> first, std::vector<Document> second) {
-        for (const Document document : second) {
-            first.push_back(document);
-        }
+        first.insert(first.end(), second.begin(), second.end());
         return first;
     };
 

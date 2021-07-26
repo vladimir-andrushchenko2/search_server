@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "concurrent_map.h"
-// #include "copy_if_unordered.h"
 #include "document.h"
 #include "string_processing.h"
 #include "word_storage.h"
