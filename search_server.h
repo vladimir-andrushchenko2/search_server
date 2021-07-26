@@ -184,7 +184,8 @@ std::tuple<std::vector<std::string_view>, DocumentStatus> SearchServer::MatchDoc
         return it != word_to_document_id_to_term_frequency_.end() && it->second.count(document_id);
     };
 
-    std::vector<std::string_view> matched_words = parallel_copy::CopyIfUnordered(query.plus_words, word_checker);
+    std::vector<std::string_view> matched_words;
+    std::copy_if(std::execution::par, query.plus_words.begin(), query.plus_words.end(), std::back_inserter(matched_words), word_checker);
 
     bool is_minus_word_in_document = std::any_of(std::execution::par, query.minus_words.begin(), query.minus_words.end(), word_checker);
 
