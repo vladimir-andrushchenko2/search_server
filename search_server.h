@@ -179,13 +179,6 @@ std::tuple<std::vector<std::string_view>, DocumentStatus> SearchServer::MatchDoc
                                                                                       int document_id) const {
     const Query query = ParseQuery(policy, raw_query);
 
-    // error handling
-    if (exception_pointer_in_parse_query_word) {
-        auto temp_exception_holder = exception_pointer_in_parse_query_word;
-        exception_pointer_in_parse_query_word = nullptr;
-        std::rethrow_exception(temp_exception_holder);
-    }
-
     std::vector<std::string_view> matched_words;
     for (const std::string_view word : query.plus_words) {
         if (word_to_document_id_to_term_frequency_.count(word) == 0) {
