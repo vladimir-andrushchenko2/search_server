@@ -190,15 +190,15 @@ std::tuple<std::vector<std::string_view>, DocumentStatus> SearchServer::MatchDoc
         }
     }
 
-    for (const std::string_view word : query.minus_words) {
-        if (word_to_document_id_to_term_frequency_.count(word) == 0) {
-            continue;
-        }
+    const auto word_checker = [this, document_id](std::string_view word) {
+        const auto it = word_to_document_id_to_term_frequency_.find(word);
+        return it != word_to_document_id_to_term_frequency_.end() && it->second.count(document_id);
+    };
 
-        if (word_to_document_id_to_term_frequency_.at(word).count(document_id)) {
-            matched_words.clear();
-            break;
-        }
+    bool is_minus_word_in_document = std::any_of(std::execution::par, query.minus_words.begin(), query.minus_words.end(), word_checker);
+
+    if (is_minus_word_in_document) {
+        matched_words.clear();
     }
 
     return std::tuple<std::vector<std::string_view>, DocumentStatus>{
@@ -345,7 +345,7 @@ std::vector<Document> SearchServer::FindAllDocuments(Execution policy, const Que
         }
     });
 
-    std::for_each(std::execution::par, query.minus_words.begin(), query.minus_words.end(), [&](std::string_view word){
+    std::for_each(std::execution::par, query.minus_words.begin(), query.minus_words.end(), [&](std::string_view word) {
         if (word_to_document_id_to_term_frequency_.count(word) == 0) {
             return;
         }
