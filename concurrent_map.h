@@ -22,10 +22,10 @@ class ConcurrentMap {
         V &ref_to_value;
     };
 
-    explicit ConcurrentMap(size_t bucket_count) : BUCKET_COUNT(bucket_count) { all_maps.resize(BUCKET_COUNT); }
+    explicit ConcurrentMap(size_t bucket_count) : kBucketCount(bucket_count) { all_maps.resize(kBucketCount); }
 
     Access operator[](const K &key) {
-        size_t map_key = key % BUCKET_COUNT;
+        size_t map_key = key % kBucketCount;
         auto &curr_map = all_maps[map_key];
         return Access{std::lock_guard(curr_map.bucket_mutex_), curr_map.bucket_map_[key]};
     }
@@ -50,10 +50,10 @@ class ConcurrentMap {
         return result;
     }
 
-    size_t getBucketCount() { return BUCKET_COUNT; }
+    size_t getBucketCount() { return kBucketCount; }
 
    private:
-    const size_t BUCKET_COUNT;
+    const size_t kBucketCount;
 
     struct Bucket {
         std::map<K, V> bucket_map_;
