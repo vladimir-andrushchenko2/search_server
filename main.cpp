@@ -27,7 +27,9 @@ int main() {
     for (const Document& document : search_server.FindTopDocuments("curly nasty cat"s)) {
         PrintDocument(document);
     }
+
     std::cout << "BANNED:"s << std::endl;
+
     // последовательная версия
     for (const Document& document :
          search_server.FindTopDocuments(std::execution::seq, "curly nasty cat"s, DocumentStatus::BANNED)) {
@@ -35,6 +37,7 @@ int main() {
     }
 
     std::cout << "Even ids:"s << std::endl;
+
     // параллельная версия
     for (const Document &document : search_server.FindTopDocuments(
              std::execution::par, "curly nasty cat"s,
